@@ -12,11 +12,11 @@ type ItemRow = {
 }
 
 export default function AddSaleButton() {
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [products, setProducts] = useState<Product[]>([])
+  const [open, setOpen]               = useState(false)
+  const [loading, setLoading]         = useState(false)
+  const [products, setProducts]       = useState<Product[]>([])
   const [customerName, setCustomerName] = useState('')
-  const [items, setItems] = useState<ItemRow[]>([{ product_id: '', quantity: '' }])
+  const [items, setItems]             = useState<ItemRow[]>([{ product_id: '', quantity: '' }])
   const router = useRouter()
 
   useEffect(() => {
@@ -76,10 +76,10 @@ export default function AddSaleButton() {
       validItems.map(item => {
         const product = products.find(p => p.id === item.product_id)!
         return {
-          invoice_id: invoice.id,
-          product_id: item.product_id,
-          quantity: Number(item.quantity),
-          unit_price: product.price,
+          invoice_id:  invoice.id,
+          product_id:  item.product_id,
+          quantity:    Number(item.quantity),
+          unit_price:  product.price,
           total_price: product.price * Number(item.quantity),
         }
       })
@@ -89,9 +89,9 @@ export default function AddSaleButton() {
       validItems.map(item => {
         const product = products.find(p => p.id === item.product_id)!
         return {
-          product_id: item.product_id,
-          quantity: Number(item.quantity),
-          total_price: product.price * Number(item.quantity),
+          product_id:    item.product_id,
+          quantity:      Number(item.quantity),
+          total_price:   product.price * Number(item.quantity),
           customer_name: customerName || null,
         }
       })
@@ -118,88 +118,107 @@ export default function AddSaleButton() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          onClick={(e) => e.target === e.currentTarget && handleClose()}
+        >
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-lg
+                          max-h-[92dvh] overflow-y-auto overscroll-contain">
 
-            <div className="flex items-center justify-between">
+            {/* ── Header ── */}
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4
+                            flex items-center justify-between rounded-t-2xl sm:rounded-t-2xl z-10">
               <h3 className="text-base font-semibold text-gray-900">إضافة عملية بيع</h3>
-              <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+              <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={20} />
               </button>
             </div>
 
-            <input
-              className="input"
-              placeholder="اسم العميل"
-              value={customerName}
-              onChange={e => setCustomerName(e.target.value)}
-            />
+            {/* ── Body ── */}
+            <div className="p-6 space-y-4">
 
-            <div className="space-y-2">
-              {items.map((item, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <select
-                    className="input flex-1"
-                    value={item.product_id}
-                    onChange={e => updateRow(index, 'product_id', e.target.value)}
-                  >
-                    <option value="">اختر المنتج *</option>
-                    {products.map(p => (
-                      <option key={p.id} value={p.id}>
-                        {p.name} — {p.quantity}
-                      </option>
-                    ))}
-                  </select>
+              {/* Customer name */}
+              <input
+                className="input"
+                placeholder="اسم العميل (اختياري)"
+                value={customerName}
+                onChange={e => setCustomerName(e.target.value)}
+              />
 
-                  <input
-                    className="input w-24"
-                    placeholder="الكمية"
-                    type="number"
-                    min="1"
-                    value={item.quantity}
-                    onChange={e => updateRow(index, 'quantity', e.target.value)}
-                  />
-
-                  {items.length > 1 && (
-                    <button
-                      onClick={() => removeRow(index)}
-                      className="text-red-400 hover:text-red-600"
+              {/* Items */}
+              <div className="space-y-2">
+                {items.map((item, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <select
+                      className="input flex-1 min-w-0"
+                      value={item.product_id}
+                      onChange={e => updateRow(index, 'product_id', e.target.value)}
                     >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+                      <option value="">اختر المنتج *</option>
+                      {products.map(p => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} — {p.quantity}
+                        </option>
+                      ))}
+                    </select>
 
-            <button
-              onClick={addRow}
-              className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1"
-            >
-              <Plus size={14} />
-              إضافة سلعة
-            </button>
+                    <input
+                      className="input w-20 shrink-0"
+                      placeholder="الكمية"
+                      type="number"
+                      min="1"
+                      value={item.quantity}
+                      onChange={e => updateRow(index, 'quantity', e.target.value)}
+                    />
 
-            {getTotal() > 0 && (
-              <div className="bg-primary-50 rounded-lg px-4 py-3">
-                <p className="text-sm text-primary-700">
-                  الإجمالي:{' '}
-                  <span className="font-bold">
-                    {getTotal().toLocaleString('ar-EG')} ج.م
-                  </span>
-                </p>
+                    {items.length > 1 && (
+                      <button
+                        onClick={() => removeRow(index)}
+                        className="text-red-400 hover:text-red-600 transition-colors shrink-0"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
-            )}
 
-            <div className="flex gap-3 pt-2">
-              <button onClick={handleSubmit} disabled={loading} className="btn-primary flex-1">
-                {loading ? 'جاري الحفظ...' : 'حفظ'}
+              {/* Add row */}
+              <button
+                onClick={addRow}
+                className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1 transition-colors"
+              >
+                <Plus size={14} />
+                إضافة سلعة
               </button>
-              <button onClick={handleClose} className="btn-secondary flex-1">
-                إلغاء
-              </button>
+
+              {/* Total */}
+              {getTotal() > 0 && (
+                <div className="bg-primary-50 rounded-lg px-4 py-3">
+                  <p className="text-sm text-primary-700">
+                    الإجمالي:{' '}
+                    <span className="font-bold">
+                      {getTotal().toLocaleString('ar-EG')} ج.م
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading || items.every(i => !i.product_id || !i.quantity)}
+                  className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'جاري الحفظ...' : 'حفظ'}
+                </button>
+                <button onClick={handleClose} className="btn-secondary flex-1">
+                  إلغاء
+                </button>
+              </div>
+
             </div>
-
           </div>
         </div>
       )}

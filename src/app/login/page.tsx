@@ -154,7 +154,6 @@ export default function LoginPage() {
               className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, #9333ea, #7e22ce)' }}
             >
-              <LayoutDashboard size={18} className="text-white" />
             </div>
             <p className="font-bold text-gray-900 text-lg">ERP System</p>
           </div>

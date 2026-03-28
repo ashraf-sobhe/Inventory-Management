@@ -141,7 +141,7 @@ export default function LoginPage() {
 
         <div className="relative z-10">
           <p className="text-xs" style={{ color: 'rgba(167,139,250,0.3)' }}>
-            © {new Date().getFullYear()}Inventory Management — جميع الحقوق محفوظة
+            © {new Date().getFullYear()} Inventory Management — جميع الحقوق محفوظة
           </p>
         </div>
       </div>
@@ -149,16 +149,21 @@ export default function LoginPage() {
       <div className="flex-1 bg-gray-50 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
 
-          <div className="flex lg:hidden items-center gap-3 justify-center mb-8">
+          <div className="flex lg:hidden flex-col items-center mb-8">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #9333ea, #7e22ce)' }}
+              className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3"
+              style={{
+                background: 'linear-gradient(135deg, #faf5ff, #f3e8ff)',
+                border: '0.5px solid #e9d5ff',
+              }}
             >
+              <LayoutDashboard size={22} className="text-purple-600" />
             </div>
-            <p className="font-bold text-gray-900 text-lg">ERP System</p>
+            <p className="font-bold text-gray-900 text-lg">Inventory Management</p>
+            <p className="text-xs text-gray-400 mt-0.5">نظام الإدارة المتكامل</p>
           </div>
 
-          <div className="mb-8">
+          <div className="hidden lg:block mb-8">
             <div
               className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5"
               style={{
@@ -172,18 +177,35 @@ export default function LoginPage() {
             <p className="text-sm text-gray-500">أدخل بياناتك للدخول إلى لوحة التحكم</p>
           </div>
 
-          {error && (
-            <div className="mb-5 flex items-center gap-2 bg-red-50 border border-red-200
-                            text-red-600 text-sm px-4 py-3 rounded-xl">
-              <span>⚠</span>
-              {error}
-            </div>
-          )}
+          <div className="hidden lg:block">
+            {error && (
+              <div className="mb-5 flex items-center gap-2 bg-red-50 border border-red-200
+                              text-red-600 text-sm px-4 py-3 rounded-xl">
+                <span>⚠</span>
+                {error}
+              </div>
+            )}
+          </div>
+
+          <div className="lg:hidden">
+            {error && (
+              <div className="mb-5 flex items-center gap-2 bg-red-50 border border-red-200
+                              text-red-600 text-sm px-4 py-3 rounded-xl">
+                <span>⚠</span>
+                {error}
+              </div>
+            )}
+          </div>
 
           <div
             className="bg-white rounded-2xl p-6 space-y-5"
             style={{ border: '0.5px solid #e5e7eb', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
           >
+            <div className="lg:hidden mb-2">
+              <h2 className="text-xl font-bold text-gray-900 mb-1">مرحباً بك</h2>
+              <p className="text-sm text-gray-500">أدخل بياناتك للدخول</p>
+            </div>
+
             <div className="space-y-1.5">
               <label className="block text-xs font-medium text-gray-700">
                 البريد الإلكتروني
@@ -195,8 +217,7 @@ export default function LoginPage() {
                 value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                className="w-full h-10 rounded-xl px-3 text-sm text-gray-900
-                           bg-gray-50 outline-none transition-all"
+                className="w-full h-10 rounded-xl px-3 text-sm text-gray-900 bg-gray-50 outline-none transition-all"
                 style={{ border: '1px solid #e5e7eb' }}
                 onFocus={e => {
                   e.currentTarget.style.borderColor = '#9333ea'
@@ -220,8 +241,7 @@ export default function LoginPage() {
                   value={form.password}
                   onChange={e => setForm({ ...form, password: e.target.value })}
                   onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                  className="w-full h-10 rounded-xl px-3 pl-10 text-sm text-gray-900
-                             bg-gray-50 outline-none transition-all"
+                  className="w-full h-10 rounded-xl px-3 pl-10 text-sm text-gray-900 bg-gray-50 outline-none transition-all"
                   style={{ border: '1px solid #e5e7eb' }}
                   onFocus={e => {
                     e.currentTarget.style.borderColor = '#9333ea'
@@ -235,8 +255,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2
-                             text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>

@@ -2,17 +2,46 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { LayoutDashboard, Eye, EyeOff, ShieldCheck } from 'lucide-react'
 
 export default function ConfirmPage() {
   const router = useRouter()
-  const [password, setPassword]         = useState('')
-  const [confirm, setConfirm]           = useState('')
-  const [showPass, setShowPass]         = useState(false)
-  const [showConfirm, setShowConfirm]   = useState(false)
-  const [loading, setLoading]           = useState(false)
-  const [error, setError]               = useState('')
+  const searchParams = useSearchParams()
+  const [password, setPassword]       = useState('')
+  const [confirm, setConfirm]         = useState('')
+  const [showPass, setShowPass]       = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [loading, setLoading]         = useState(false)
+  const [error, setError]             = useState('')
+  const [verified, setVerified]       = useState(false)
+
+  useEffect(() => {
+    async function verifyToken() {
+      const token_hash = searchParams.get('token_hash')
+      const type = searchParams.get('type')
+
+      if (!token_hash || !type) {
+        router.push('/login')
+        return
+      }
+
+      const supabase = createClient()
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash,
+        type: 'invite',
+      })
+
+      if (error) {
+        router.push('/login')
+        return
+      }
+
+      setVerified(true)
+    }
+
+    verifyToken()
+  }, [])
 
   async function handleSetPassword() {
     if (!password || !confirm) return
@@ -39,6 +68,20 @@ export default function ConfirmPage() {
 
     router.push('/dashboard')
     router.refresh()
+  }
+
+  if (!verified) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
+        <div className="text-center space-y-3">
+          <svg className="animate-spin w-8 h-8 text-purple-600 mx-auto" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+          </svg>
+          <p className="text-sm text-gray-500">جاري التحقق...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

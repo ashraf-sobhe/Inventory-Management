@@ -34,18 +34,26 @@ export default function AddPurchaseButton() {
 
     const supabase = createClient()
     const product = products.find(p => p.id === form.product_id)
-    if (!product) return
+
+    if (!product) {
+      setLoading(false)
+      return
+    }
 
     const total_cost = Number(form.cost_per_unit) * Number(form.quantity)
 
-    await supabase.from('purchases').insert({
+    const { error: purchaseError } = await supabase.from('purchases').insert({
       product_id: form.product_id,
       quantity: Number(form.quantity),
       total_cost,
       supplier_name: form.supplier_name,
     })
 
-    // تحديث الكمية في المخزون
+    if (purchaseError) {
+      setLoading(false)
+      return
+    }
+
     await supabase
       .from('products')
       .update({ quantity: product.quantity + Number(form.quantity) })
@@ -114,7 +122,6 @@ export default function AddPurchaseButton() {
                 onChange={e => setForm({ ...form, supplier_name: e.target.value })}
               />
 
-              {/* التكلفة الإجمالية */}
               {form.quantity && form.cost_per_unit && (
                 <div className="bg-green-50 rounded-lg px-4 py-3">
                   <p className="text-sm text-green-700">

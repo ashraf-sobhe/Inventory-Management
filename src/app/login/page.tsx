@@ -223,9 +223,7 @@ export default function LoginPage() {
 
           <div className="relative z-10 anim-fade-in" style={{ animationDelay: '800ms' }}>
             <div className="flex items-center justify-between">
-              <p className="text-xs" style={{ color: 'rgba(167,139,250,0.3)' }}>
-                © {new Date().getFullYear()} Inventory Management — جميع الحقوق محفوظة
-              </p>
+              
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-400" style={{ boxShadow: '0 0 6px rgba(74,222,128,0.8)' }} />
                 <span className="text-xs" style={{ color: 'rgba(196,181,253,0.3)' }}>متصل</span>

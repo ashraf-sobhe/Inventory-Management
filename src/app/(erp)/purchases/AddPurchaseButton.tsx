@@ -42,22 +42,23 @@ export default function AddPurchaseButton() {
 
     const total_cost = Number(form.cost_per_unit) * Number(form.quantity)
 
-    const { error: purchaseError } = await supabase.from('purchases').insert({
-      product_id: form.product_id,
-      quantity: Number(form.quantity),
-      total_cost,
-      supplier_name: form.supplier_name,
-    })
+    const [{ error: purchaseError }] = await Promise.all([
+      supabase.from('purchases').insert({
+        product_id: form.product_id,
+        quantity: Number(form.quantity),
+        total_cost,
+        supplier_name: form.supplier_name,
+      }),
+      supabase
+        .from('products')
+        .update({ quantity: product.quantity + Number(form.quantity) })
+        .eq('id', form.product_id),
+    ])
 
     if (purchaseError) {
       setLoading(false)
       return
     }
-
-    await supabase
-      .from('products')
-      .update({ quantity: product.quantity + Number(form.quantity) })
-      .eq('id', form.product_id)
 
     setLoading(false)
     setOpen(false)

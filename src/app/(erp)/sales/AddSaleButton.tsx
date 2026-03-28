@@ -12,11 +12,11 @@ type ItemRow = {
 }
 
 export default function AddSaleButton() {
-  const [open, setOpen]               = useState(false)
-  const [loading, setLoading]         = useState(false)
-  const [products, setProducts]       = useState<Product[]>([])
+  const [open, setOpen]                 = useState(false)
+  const [loading, setLoading]           = useState(false)
+  const [products, setProducts]         = useState<Product[]>([])
   const [customerName, setCustomerName] = useState('')
-  const [items, setItems]             = useState<ItemRow[]>([{ product_id: '', quantity: '' }])
+  const [items, setItems]               = useState<ItemRow[]>([{ product_id: '', quantity: '' }])
   const router = useRouter()
 
   useEffect(() => {
@@ -64,13 +64,17 @@ export default function AddSaleButton() {
     const supabase = createClient()
     const total = getTotal()
 
-    const { data: invoice } = await supabase
+    const { data: invoice, error: invoiceError } = await supabase
       .from('invoices')
       .insert({ customer_name: customerName || null, total_price: total })
       .select()
       .single()
 
-    if (!invoice) { setLoading(false); return }
+    if (invoiceError || !invoice) {
+      console.error('Invoice Error:', invoiceError?.message)
+      setLoading(false)
+      return
+    }
 
     await supabase.from('invoice_items').insert(
       validItems.map(item => {
@@ -107,6 +111,7 @@ export default function AddSaleButton() {
 
     setLoading(false)
     handleClose()
+    await new Promise(r => setTimeout(r, 500))
     router.refresh()
   }
 
@@ -125,19 +130,15 @@ export default function AddSaleButton() {
           <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-lg
                           max-h-[92dvh] overflow-y-auto overscroll-contain">
 
-            {/* ── Header ── */}
             <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4
-                            flex items-center justify-between rounded-t-2xl sm:rounded-t-2xl z-10">
+                            flex items-center justify-between rounded-t-2xl z-10">
               <h3 className="text-base font-semibold text-gray-900">إضافة عملية بيع</h3>
               <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={20} />
               </button>
             </div>
 
-            {/* ── Body ── */}
             <div className="p-6 space-y-4">
-
-              {/* Customer name */}
               <input
                 className="input"
                 placeholder="اسم العميل (اختياري)"
@@ -145,7 +146,6 @@ export default function AddSaleButton() {
                 onChange={e => setCustomerName(e.target.value)}
               />
 
-              {/* Items */}
               <div className="space-y-2">
                 {items.map((item, index) => (
                   <div key={index} className="flex items-center gap-2">
@@ -183,7 +183,6 @@ export default function AddSaleButton() {
                 ))}
               </div>
 
-              {/* Add row */}
               <button
                 onClick={addRow}
                 className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1 transition-colors"
@@ -192,7 +191,6 @@ export default function AddSaleButton() {
                 إضافة سلعة
               </button>
 
-              {/* Total */}
               {getTotal() > 0 && (
                 <div className="bg-primary-50 rounded-lg px-4 py-3">
                   <p className="text-sm text-primary-700">
@@ -204,7 +202,6 @@ export default function AddSaleButton() {
                 </div>
               )}
 
-              {/* Actions */}
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={handleSubmit}
@@ -217,7 +214,6 @@ export default function AddSaleButton() {
                   إلغاء
                 </button>
               </div>
-
             </div>
           </div>
         </div>

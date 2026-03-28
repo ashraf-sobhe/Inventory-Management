@@ -5,6 +5,8 @@ import AddSaleButton from '@/app/(erp)/sales/AddSaleButton'
 import DeleteSaleButton from '@/app/(erp)/sales/DeleteSaleButton'
 import InvoiceButton from '@/component/sales/InvoiceButton'
 
+export const dynamic = 'force-dynamic'
+
 async function getInvoices() {
   const supabase = createClient()
   const { data } = await supabase
@@ -45,7 +47,6 @@ export default async function SalesPage() {
           <AddSaleButton />
         </div>
 
-        {/* Desktop Table */}
         <div className="hidden lg:block table-container">
           <table className="w-full">
             <thead>
@@ -92,7 +93,6 @@ export default async function SalesPage() {
           </table>
         </div>
 
-        {/* Mobile Cards */}
         <div className="lg:hidden space-y-3">
           {invoices.length === 0 ? (
             <p className="text-center py-12 text-gray-400 text-sm">
@@ -114,11 +114,9 @@ export default async function SalesPage() {
                     {Number(invoice.total_price).toLocaleString('ar-EG')} {company?.currency ?? 'ج.م'}
                   </span>
                 </div>
-
                 <p className="text-sm text-gray-600">
                   {invoice.invoice_items.map((item: any) => item.products?.name).join('، ')}
                 </p>
-
                 <div className="flex items-center justify-end gap-3 pt-1 border-t border-gray-100">
                   <InvoiceButton invoice={invoice} company={company} />
                   <DeleteSaleButton id={invoice.id} />

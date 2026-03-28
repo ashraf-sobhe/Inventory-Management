@@ -337,7 +337,7 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-center gap-1.5 mt-5">
               <ShieldCheck size={13} className="text-gray-400" />
-              <span className="text-xs text-gray-400">اتصال آمن ومشفر بـ Supabase</span>
+              <span className="text-xs text-gray-400">Inventory Management — جميع الحقوق محفوظة</span>
             </div>
 
           </div>

@@ -5,11 +5,19 @@ import { createClient } from '@/lib/supabase'
 
 type Role = 'admin' | 'manager' | 'employee' | null
 
+let cachedRole: Role = null
+
 export function useRole() {
-  const [role, setRole] = useState<Role>(null)
-  const [loading, setLoading] = useState(true)
+  const [role, setRole] = useState<Role>(cachedRole)
+  const [loading, setLoading] = useState(!cachedRole)
 
   useEffect(() => {
+    if (cachedRole) {
+      setRole(cachedRole)
+      setLoading(false)
+      return
+    }
+
     let isMounted = true
 
     async function getRole() {
@@ -21,9 +29,7 @@ export function useRole() {
           error: userError,
         } = await supabase.auth.getUser()
 
-        if (userError) {
-          console.error('Auth error:', userError)
-        }
+        if (userError) console.error('Auth error:', userError)
 
         if (!user) {
           if (isMounted) {
@@ -39,19 +45,18 @@ export function useRole() {
           .eq('id', user.id)
           .single()
 
-        if (error) {
-          console.error('Role fetch error:', error)
-        }
+        if (error) console.error('Role fetch error:', error)
+
+        const r = (data?.role as Role) ?? 'employee'
+        cachedRole = r
 
         if (isMounted) {
-          setRole((data?.role as Role) ?? 'employee')
+          setRole(r)
           setLoading(false)
         }
       } catch (err) {
         console.error('Unexpected error:', err)
-        if (isMounted) {
-          setLoading(false)
-        }
+        if (isMounted) setLoading(false)
       }
     }
 
@@ -65,8 +70,8 @@ export function useRole() {
   return {
     role,
     loading,
-    isAdmin: role === 'admin',
-    isManager: role === 'admin' || role === 'manager',
+    isAdmin:    role === 'admin',
+    isManager:  role === 'admin' || role === 'manager',
     isEmployee: role === 'employee',
   }
 }

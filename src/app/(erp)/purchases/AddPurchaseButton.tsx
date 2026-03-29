@@ -5,6 +5,7 @@ import { Plus, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import type { Product } from '@/lib/types/database'
+import toast from 'react-hot-toast'
 
 export default function AddPurchaseButton() {
   const [open, setOpen] = useState(false)
@@ -56,10 +57,12 @@ export default function AddPurchaseButton() {
     ])
 
     if (purchaseError) {
+      toast.error('حدث خطأ، حاول مرة أخرى')
       setLoading(false)
       return
     }
 
+    toast.success('تم تسجيل الشراء بنجاح')
     setLoading(false)
     setOpen(false)
     setForm({ product_id: '', quantity: '', cost_per_unit: '', supplier_name: '' })
@@ -76,7 +79,6 @@ export default function AddPurchaseButton() {
       {open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-gray-900">إضافة عملية شراء</h3>
               <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -137,18 +139,13 @@ export default function AddPurchaseButton() {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="btn-primary flex-1"
-              >
+              <button onClick={handleSubmit} disabled={loading} className="btn-primary flex-1">
                 {loading ? 'جاري الحفظ...' : 'حفظ'}
               </button>
               <button onClick={() => setOpen(false)} className="btn-secondary flex-1">
                 إلغاء
               </button>
             </div>
-
           </div>
         </div>
       )}

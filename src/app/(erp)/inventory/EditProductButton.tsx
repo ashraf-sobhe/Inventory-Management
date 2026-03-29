@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useRole } from '@/lib/hooks/useRole'
 import type { Product } from '@/lib/types/database'
+import toast from 'react-hot-toast'
 
 export default function EditProductButton({ product }: { product: Product }) {
   const [open, setOpen] = useState(false)
@@ -28,7 +29,7 @@ export default function EditProductButton({ product }: { product: Product }) {
     setLoading(true)
 
     const supabase = createClient()
-    await supabase
+    const { error } = await supabase
       .from('products')
       .update({
         name:     form.name,
@@ -39,6 +40,13 @@ export default function EditProductButton({ product }: { product: Product }) {
       })
       .eq('id', product.id)
 
+    if (error) {
+      toast.error('حدث خطأ، حاول مرة أخرى')
+      setLoading(false)
+      return
+    }
+
+    toast.success('تم تعديل المنتج بنجاح')
     setLoading(false)
     setOpen(false)
     router.refresh()
@@ -46,17 +54,13 @@ export default function EditProductButton({ product }: { product: Product }) {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="text-gray-400 hover:text-primary-500 transition-colors"
-      >
+      <button onClick={() => setOpen(true)} className="text-gray-400 hover:text-primary-500 transition-colors">
         <Pencil size={16} />
       </button>
 
       {open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-gray-900">تعديل المنتج</h3>
               <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -102,18 +106,13 @@ export default function EditProductButton({ product }: { product: Product }) {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <button
-                onClick={handleSave}
-                disabled={loading}
-                className="btn-primary flex-1"
-              >
+              <button onClick={handleSave} disabled={loading} className="btn-primary flex-1">
                 {loading ? 'جاري الحفظ...' : 'حفظ التعديلات'}
               </button>
               <button onClick={() => setOpen(false)} className="btn-secondary flex-1">
                 إلغاء
               </button>
             </div>
-
           </div>
         </div>
       )}

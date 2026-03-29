@@ -5,6 +5,7 @@ import { Plus, X, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import type { Product } from '@/lib/types/database'
+import toast from 'react-hot-toast'
 
 type ItemRow = {
   product_id: string
@@ -71,7 +72,7 @@ export default function AddSaleButton() {
       .single()
 
     if (invoiceError || !invoice) {
-      console.error('Invoice Error:', invoiceError?.message)
+      toast.error('حدث خطأ، حاول مرة أخرى')
       setLoading(false)
       return
     }
@@ -109,6 +110,7 @@ export default function AddSaleButton() {
         .eq('id', item.product_id)
     }
 
+    toast.success('تم تسجيل البيع بنجاح')
     setLoading(false)
     handleClose()
     await new Promise(r => setTimeout(r, 500))

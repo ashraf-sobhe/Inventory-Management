@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 export default function AddProductButton() {
   const [open, setOpen] = useState(false)
@@ -23,7 +24,7 @@ export default function AddProductButton() {
     setLoading(true)
 
     const supabase = createClient()
-    await supabase.from('products').insert({
+    const { error } = await supabase.from('products').insert({
       name: form.name,
       sku: form.sku,
       price: Number(form.price),
@@ -31,6 +32,13 @@ export default function AddProductButton() {
       category: form.category,
     })
 
+    if (error) {
+      toast.error('حدث خطأ، حاول مرة أخرى')
+      setLoading(false)
+      return
+    }
+
+    toast.success('تم إضافة المنتج بنجاح')
     setLoading(false)
     setOpen(false)
     setForm({ name: '', sku: '', price: '', quantity: '', category: '' })
@@ -44,12 +52,9 @@ export default function AddProductButton() {
         إضافة منتج
       </button>
 
-      {/* Modal */}
       {open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-
-            {/* Header */}
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-gray-900">إضافة منتج جديد</h3>
               <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
@@ -57,7 +62,6 @@ export default function AddProductButton() {
               </button>
             </div>
 
-            {/* Form */}
             <div className="space-y-3">
               <input
                 className="input"
@@ -95,20 +99,14 @@ export default function AddProductButton() {
               />
             </div>
 
-            {/* Actions */}
             <div className="flex gap-3 pt-2">
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="btn-primary flex-1"
-              >
+              <button onClick={handleSubmit} disabled={loading} className="btn-primary flex-1">
                 {loading ? 'جاري الحفظ...' : 'حفظ'}
               </button>
               <button onClick={() => setOpen(false)} className="btn-secondary flex-1">
                 إلغاء
               </button>
             </div>
-
           </div>
         </div>
       )}
